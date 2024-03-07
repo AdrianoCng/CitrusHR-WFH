@@ -69,10 +69,15 @@ class Login_manager:
             try:
                 with open(self.ACCOUNTS_FILE_PATH, 'r') as file:
                     data = json.load(file)
-            except FileNotFoundError:
-                data = []
 
-            data.append(credentials)
+                    for i, account in enumerate(data):
+                        if 'username' in account and account['username'] == username:
+                            data[i] = credentials
+                            break
+                        else:
+                            data.append(credentials)
+            except FileNotFoundError:
+                data = [credentials]
 
             with open(self.ACCOUNTS_FILE_PATH, 'w') as file:
                 json.dump(data, file)
