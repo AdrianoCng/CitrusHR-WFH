@@ -1,5 +1,6 @@
 import json
 from requests import Session
+from cryptography.fernet import Fernet
 from utils import parse_html
 from getpass import getpass
 
@@ -12,6 +13,7 @@ class Login_manager:
 
     def __init__(self, session: Session):
         self.session = session
+        self.fernet = Fernet(self.load_key())
 
     def login(self):
         while not self.logged_in:
@@ -53,7 +55,7 @@ class Login_manager:
                     
                     print('Account found')
                     self.is_saved_account = True
-                    password = account['password']
+                    password = self.fernet.decrypt(account['password'].encode()).decode()
 
                     return username, password
         except FileNotFoundError:
@@ -75,10 +77,11 @@ class Login_manager:
         user_id = soup.find('body')['data-uid']
         return user_id
     
-    def save_credentials(self, username, password):            
+    def save_credentials(self, username: str, password: str):
+        encrypted_password = self.fernet.encrypt(password.encode()).decode()
         credentials = {
             'username': username,
-            'password': password
+            'password': encrypted_password
         }
         
         preference = input('Do you want to save this credentials? (y/n): ')
@@ -95,4 +98,14 @@ class Login_manager:
                 json.dump(data, file)
             print('Credentials saved successfully')
 
+    def load_key(self):
+        path = './key.key'
+        try:
+            with open(path, 'rb') as file:
+                key = file.read()
+        except FileNotFoundError:
+            key = Fernet.generate_key()
+            with open(path, 'wb') as file:
+                file.write(key)
 
+        return key
