@@ -1,6 +1,6 @@
 import json
 from requests import Session
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 from utils import parse_html
 from getpass import getpass
 
@@ -115,5 +115,8 @@ class Login_manager:
                     return password
         except FileNotFoundError:
             pass
+        except InvalidToken:
+            print('Cannot decrypt saved password. Invalid token')
+
     
         return None
