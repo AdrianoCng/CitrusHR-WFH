@@ -28,7 +28,7 @@ class Request_handler:
                 response = self.session.post(url, data=payload)
 
                 if response.status_code == 200:
-                    print('Work from home successfully requested on ', date)
+                    print('Work from home successfully requested on', date)
             except Exception as e:
                 print('Request failed with error: ', e)
 
