@@ -1,0 +1,13 @@
+Babel==2.14.0
+beautifulsoup4==4.12.3
+certifi==2024.2.2
+cffi==1.16.0
+charset-normalizer==3.3.2
+cryptography==42.0.5
+idna==3.6
+pycparser==2.21
+requests==2.31.0
+soupsieve==2.5
+tk==0.1.0
+tkcalendar==1.6.1
+urllib3==2.2.1
