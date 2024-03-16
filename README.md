@@ -11,7 +11,7 @@
 ## Installation
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-username/CitrusHR-WFH.git
+   git clone https://github.com/AdrianoCng/CitrusHR-WFH.git
    cd CitrusHR-WFH
    ```
 
