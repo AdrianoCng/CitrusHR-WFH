@@ -1,6 +1,6 @@
 from tkinter import *
 from tkcalendar import *
-from requests import Session
+from requests import Session, exceptions
 
 class DatePicker:
 
@@ -42,10 +42,11 @@ class DatePicker:
 
             if response.status_code == 200:
                 self.label.config(text=f'Work from home successfully request on {selected_date}')
+        except exceptions.RequestException as e:
+            self.label.config(text=f'An https error occurred. Please try again')
         except Exception as e:
             self.label.config(text=f'Request failed with error: {e}')
 
 
     def quit(self):
         self.root.destroy()
-    
