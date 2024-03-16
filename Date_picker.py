@@ -1,9 +1,6 @@
 from tkinter import *
-from typing import Callable
 from tkcalendar import *
 from requests import Session
-
-CallbackType = Callable[[str], None]
 
 class DatePicker:
 
