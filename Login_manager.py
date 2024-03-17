@@ -1,5 +1,5 @@
 import json
-from requests import Session
+from requests import Session, exceptions
 from cryptography.fernet import Fernet, InvalidToken
 from utils import parse_html
 from getpass import getpass
@@ -28,7 +28,10 @@ class Login_manager:
                     '__RequestVerificationToken': request_verification_token
                 }
 
-                self.session.post(self.URL, data)
+                try:
+                    self.session.post(self.URL, data)
+                except exceptions.RequestException as e:
+                    print('Http error:', e)
 
                 # Successfully Login
                 if 'HrCogAuth' in self.session.cookies.keys():
@@ -84,7 +87,10 @@ class Login_manager:
             print('Credentials saved successfully')
 
     def get_verification_token(self):
-        html = self.session.get(self.URL).text
+        try:
+            html = self.session.get(self.URL).text
+        except exceptions.RequestException:
+            print('Error trying to get verification token')
         soup = parse_html(html)
         token = soup.find('input', {'name': '__RequestVerificationToken'})['value']
         return token
