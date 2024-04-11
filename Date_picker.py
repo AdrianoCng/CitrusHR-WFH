@@ -6,6 +6,7 @@ class DatePicker:
 
     def __init__(self, session: Session) -> None:
         self.root = Tk()
+        self.root.title("citrusHR")
         self.calendar = Calendar(self.root, selectmode='day')
         self.label = Label(self.root, text = "")
         self.session = session
@@ -47,6 +48,6 @@ class DatePicker:
         except Exception as e:
             self.label.config(text=f'Request failed with error: {e}')
 
-
     def quit(self):
         self.root.destroy()
+        
