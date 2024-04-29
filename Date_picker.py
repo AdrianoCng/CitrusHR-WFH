@@ -1,41 +1,58 @@
 from calendar import Calendar
+import datetime
 from tkinter import *
+from tkinter import ttk
+from tkinter.ttk import Style
 from tkcalendar import *
 from requests import Session, exceptions
 
 class DatePicker:
-
     def __init__(self, session: Session) -> None:
         self.root = Tk()
+        self.root.geometry('900x600')
         self.root.title("citrusHR")
-        self.calendar = Calendar(self.root, selectmode='day', selectmultiple=True)
-        self.selected_dates = []
+        style = Style(self.root)
+        style.theme_use('clam')
+
+        self.calendar = Calendar(self.root, 
+                                 selectmode='day', 
+                                 selectmultiple=True,
+                                 font="Arial 19", 
+                                 showweeknumbers=False, 
+                                 date_pattern='dd/MM/yyyy', 
+                                 background="#353935", 
+                                 normalbackground ="#353935",
+                                 foreground="#F5F5F5",
+                                 normalforeground="#F5F5F5",
+                                 selectbackground="red",
+                                 selectforeground="yellow",
+                                 borderwidth=0, 
+                                 bg_selected='red',
+                                disabledforeground="red",
+                                style="Custom.TCalendarDay")
+        
+        self.selected_dates = set()
         self.label = Label(self.root, text = "")
         self.successful_dates = []
         self.session = session
         self.calendar.bind('<<CalendarSelected>>', self.select_date) 
-        self.date_listbox = Listbox(self.root, selectmode=MULTIPLE)
 
     def render(self):
         self.calendar.pack(pady=20)
         
         # Pack buttons and label
         Button(self.root, text = "Request WFH", command = self.request_wfh).pack(pady = 10)
+        Button(self.root, text="Get Selected Dates", command=self.get_selected_dates).pack(pady=10)
+        Button(self.root, text="Clear Selection", command=self.clear_selection).pack(pady=10)
         Button(self.root, text = "Quit", command = self.quit).pack(pady = 10)
         self.label.pack(pady = 20)
-        self.date_listbox.pack(pady=10)
-
         self.root.mainloop()
         
     def request_wfh(self):
         user_id = self.session.headers.get('user_id')
         print(f"User ID: {user_id}")
         
-        cur_selection = self.date_listbox.curselection()
-        print("Current selection:", cur_selection)
-        
-        for index in cur_selection:
-            selected_date = self.date_listbox.get(index)
+        for selected_date in self.selected_dates:
             print(f"Selected Date: {selected_date}")
             
             url = f'https://system.citrushr.com/LocationBooking/CreateHome?userId={user_id}'
@@ -65,14 +82,29 @@ class DatePicker:
             if self.successful_dates:
                 successful_dates_str = ', '.join(self.successful_dates)
                 self.label.config(text=f'Work from home successfully requested on {successful_dates_str}')
+                self.label.after(30000, lambda: self.clear_dates())
+
+    def clear_dates(self):
+        self.label.config(text='')
+        self.successful_dates = []
 
     def select_date(self, event):
-        selected_date = self.calendar.selection_get().strftime("%Y-%m-%d")
-        if selected_date not in self.selected_dates:
-            self.selected_dates.append(selected_date)
-            self.label.config(text=f"Selected dates: {', '.join(self.selected_dates)}")
-            self.date_listbox.insert(END, selected_date)
-        else:
-            self.label.config(text=f"Date already selected: {selected_date}")
+        # clicked_date = self.calendar.selection_get()
+        # self.calendar.tag_config(clicked_date, background='red', foreground='yellow')
+        selected_date = self.calendar.selection_get().strftime("%d-%m-%Y")
+        if selected_date in self.selected_dates:
+            self.selected_dates.remove(selected_date)
+        else: 
+            self.selected_dates.add(selected_date)
+
+    def get_selected_dates(self):
+        print("Selected Dates:", self.selected_dates)
+
+    def clear_selection(self):
+        self.selected_dates.clear()
+        today_date = datetime.date.today()
+        print(f"Today's date: {today_date}")  
+        self.calendar.selection_set(today_date)
+
     def quit(self):
         self.root.destroy()
