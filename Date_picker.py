@@ -1,5 +1,6 @@
 from calendar import Calendar
 import datetime
+from datetime import datetime
 from tkinter import *
 from tkinter import ttk
 from tkinter.ttk import Style
@@ -24,13 +25,11 @@ class DatePicker:
                                  normalbackground ="#353935",
                                  foreground="#F5F5F5",
                                  normalforeground="#F5F5F5",
-                                 selectbackground="red",
-                                 selectforeground="yellow",
                                  borderwidth=0, 
                                  bg_selected='red',
                                 disabledforeground="red",
                                 style="Custom.TCalendarDay")
-        
+
         self.selected_dates = set()
         self.label = Label(self.root, text = "")
         self.successful_dates = []
@@ -82,20 +81,24 @@ class DatePicker:
             if self.successful_dates:
                 successful_dates_str = ', '.join(self.successful_dates)
                 self.label.config(text=f'Work from home successfully requested on {successful_dates_str}')
-                self.label.after(30000, lambda: self.clear_dates())
+                self.label.after(10000, lambda: self.clear_dates())
 
     def clear_dates(self):
         self.label.config(text='')
         self.successful_dates = []
 
     def select_date(self, event):
-        # clicked_date = self.calendar.selection_get()
-        # self.calendar.tag_config(clicked_date, background='red', foreground='yellow')
-        selected_date = self.calendar.selection_get().strftime("%d-%m-%Y")
+        selected_date = self.calendar.selection_get().strftime("%Y-%m-%d")
+        selected_date_format = datetime.strptime(selected_date, "%Y-%m-%d").date()
         if selected_date in self.selected_dates:
             self.selected_dates.remove(selected_date)
+            self.calendar.calevent_remove(selected_date_format)
+            self.calendar.tag_delete(selected_date)
         else: 
             self.selected_dates.add(selected_date)
+            self.calendar.calevent_create(selected_date_format, 'Selected already', selected_date)
+            self.calendar.tag_config(selected_date, background='red', foreground='yellow')
+        print(f"Selected Dates: {self.selected_dates}")
 
     def get_selected_dates(self):
         print("Selected Dates:", self.selected_dates)
