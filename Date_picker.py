@@ -1,8 +1,6 @@
 from calendar import Calendar
-import datetime
-from datetime import datetime
+from datetime import datetime, date
 from tkinter import *
-from tkinter import ttk
 from tkinter.ttk import Style
 from tkcalendar import *
 from requests import Session, exceptions
@@ -41,7 +39,6 @@ class DatePicker:
         
         # Pack buttons and label
         Button(self.root, text = "Request WFH", command = self.request_wfh).pack(pady = 10)
-        Button(self.root, text="Get Selected Dates", command=self.get_selected_dates).pack(pady=10)
         Button(self.root, text="Clear Selection", command=self.clear_selection).pack(pady=10)
         Button(self.root, text = "Quit", command = self.quit).pack(pady = 10)
         self.label.pack(pady = 20)
@@ -100,13 +97,11 @@ class DatePicker:
             self.calendar.tag_config(selected_date, background='red', foreground='yellow')
         print(f"Selected Dates: {self.selected_dates}")
 
-    def get_selected_dates(self):
-        print("Selected Dates:", self.selected_dates)
-
     def clear_selection(self):
+        for selected_date in self.selected_dates:
+            self.calendar.tag_delete(selected_date)
         self.selected_dates.clear()
-        today_date = datetime.date.today()
-        print(f"Today's date: {today_date}")  
+        today_date = date.today() 
         self.calendar.selection_set(today_date)
 
     def quit(self):
